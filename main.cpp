@@ -1,7 +1,7 @@
 #include <iostream>
 #include <stack>
 #include <valarray>
-#include <fcntl.h>
+
 
 using namespace std;
 
