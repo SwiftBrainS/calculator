@@ -1,7 +1,7 @@
 #include <iostream>
 #include <stack>
 #include <valarray>
-'5';
+
 using namespace std;
 
 int Priority(char operation);
