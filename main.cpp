@@ -42,6 +42,11 @@ double Calculator(string s){
             else if (s[i]=='s'){
                 ope.push('s');
                 i+=3;
+                //防止负号使开根号提前计算
+                if (s[i+1]=='-'){
+                    cout<<"错误: 负数无法开根号！"<<endl;
+                    return 0;
+                }
             }
             //其他符号+运算
             else{
