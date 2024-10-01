@@ -12,73 +12,69 @@ double Calculator(string s);
 double UnaryOpera(double num1, char op);
 
 int main() {
-    system("chcp 65001");
+    //system("chcp 65001");
     string s;
     getline(cin,s);
-    cout<<"ç»“æžœ:"<<Calculator(s)<<endl;
+    cout<<"½á¹û:"<<Calculator(s)<<endl;
     return 0;
 }
-//è¿ç”¨å•è°ƒé€’å‡æ ˆè¿›è¡Œè®¡ç®—
+//ÔËÓÃµ¥µ÷µÝ¼õÕ»½øÐÐ¼ÆËã
 double Calculator(string s){
     int len=s.size(),i=0;
     stack<double> value;
     stack<char> ope;
     while (i<len) {
-        //æ˜¯æ•°å­—ï¼ŒæŽ¨å…¥æ•°å€¼æ ˆ
+        //ÊÇÊý×Ö£¬ÍÆÈëÊýÖµÕ»
         if (isdigit(s[i])) {
-            value.push(getSingleNum(s,i));//æŒ‡é’ˆåœ¨æ•°å­—åŽä¸€ä½;
+            value.push(getSingleNum(s,i));//Ö¸ÕëÔÚÊý×ÖºóÒ»Î»;
             i--;
         }
-        //æ˜¯è¿ç®—ç¬¦ï¼Œå°±è£…è½½è¿ç®—ç¬¦å¹¶åˆ¤æ–­æ˜¯å¦è®¡ç®—
+        //ÊÇÔËËã·û£¬¾Í×°ÔØÔËËã·û²¢ÅÐ¶ÏÊÇ·ñ¼ÆËã
         else{
-            cout << "å½“å‰è¿ç®—ç¬¦: " << s[i] << endl;
-            cout << "æ“ä½œæ ˆçŠ¶æ€: " << (ope.empty() ? "ç©º" : "ä¸ç©º") << endl;
-            //æ ˆä¸ºç©º
-            if (ope.empty()) ope.push(s[i]);
-            //ç¬¦å·æ ˆä¸ä¸ºç©º
+            //cout << "µ±Ç°ÔËËã·û: " << s[i] << endl;
+            //cout << "²Ù×÷Õ»×´Ì¬: " << (ope.empty() ? "¿Õ" : "²»¿Õ") << endl;
+            //ÅÐ¶Ïµ¹Êý(inv)
+            if (s[i]=='i'){
+                ope.push('i');//ÓÅÏÈ¼¶×î¸ß£¬Ö±½Ópush
+                i+=2;
+            }
+            //ÅÐ¶Ï¿ª¸ùºÅ(sqrt)
+            else if (s[i]=='s'){
+                ope.push('s');
+                i+=3;
+            }
+            //ÆäËû·ûºÅ+ÔËËã
             else{
-                //åˆ¤æ–­å€’æ•°(inv)
-                if (s[i]=='i'){
-                    ope.push('i');//ä¼˜å…ˆçº§æœ€é«˜ï¼Œç›´æŽ¥push
-                    i+=2;
-                }
-                //åˆ¤æ–­å¼€æ ¹å·(sqrt)
-                else if (s[i]=='s'){
-                    ope.push('s');
-                    i+=3;
-                }
-                //å…¶ä»–ç¬¦å·+è¿ç®—
-                else{
-                    while(Priority(ope.top())>= Priority(s[i])){
-                        //ä¸€å…ƒè¿ç®—
-                        if (ope.top()=='s' || ope.top()=='i'){
-                            double num1=value.top();
-                            value.pop();
-                            char op=ope.top();
-                            ope.pop();
-                            ope.push(s[i]);
-                            value.push(UnaryOpera(num1,op));
-                        }
-                        //äºŒå…ƒè¿ç®—
-                        else{
-                            double num1=value.top();
-                            value.pop();
-                            double num2=value.top();
-                            value.pop();
-                            char op=ope.top();
-                            ope.pop();
-                            ope.push(s[i]);
-                            value.push(Opera(num1,num2,op));
-                        }
+                //ÔËËã²¿·Ö£¬whileÑ­»·Îñ±Ø¼Ó²»Îª¿ÕµÄÌõ¼þ£¬·ñÔò³¬·¶Î§
+                while(!ope.empty() && Priority(ope.top())>= Priority(s[i])){
+                    //cout<<s[i]<<"½øÀ´ÁË"<<endl;
+                    //Ò»ÔªÔËËã
+                    if (ope.top()=='s' || ope.top()=='i'){
+                        double num1=value.top();
+                        value.pop();
+                        char op=ope.top();
+                        ope.pop();
+                        value.push(UnaryOpera(num1,op));
                     }
-                    ope.push(s[i]);
-
+                    //¶þÔªÔËËã
+                    else{
+                        double num1=value.top();
+                        value.pop();
+                        double num2=value.top();
+                        value.pop();
+                        char op=ope.top();
+                        ope.pop();
+                        value.push(Opera(num2,num1,op));//×¢ÒâÊýµÄ´æ·ÅÊÇ·´µÄ£¬ËùÒÔÊÇ2ÔÚÇ°£¬1ÔÚºó
+                    }
                 }
+                //²»ÔËËã»òÔËËãÍê±Ïºó£¬·ûºÅÈëÕ»,Ò»¶¨ÒªÈëÕ»£¬²¢ÇÒÊÇ×îºóÈëÕ»£¬·ñÔòÕ»»á³¬·¶Î§
+                ope.push(s[i]);
+
             }
         }
         i++;
     }
-    //å…¨éƒ¨å…¥æ ˆå¹¶è®¡ç®—å®Œæ¯•åŽï¼Œå¦‚æžœè¿˜æœ‰è¿ç®—ç¬¦æ²¡ç®—ï¼Œé‚£ä¹ˆå°±è¿›è¡Œæœ€åŽçš„è®¡ç®—
+    //È«²¿ÈëÕ»²¢¼ÆËãÍê±Ïºó£¬Èç¹û»¹ÓÐÔËËã·ûÃ»Ëã£¬ÄÇÃ´¾Í½øÐÐ×îºóµÄ¼ÆËã
     while (!ope.empty()){
         if (ope.top()=='s' || ope.top()=='i'){
             char op=ope.top();
@@ -93,24 +89,24 @@ double Calculator(string s){
             value.pop();
             double num2=value.top();
             value.pop();
-            value.push(Opera(num1,num2,op));
+            value.push(Opera(num2,num1,op));//×¢ÒâÊýµÄ´æ·ÅÊÇ·´µÄ£¬ËùÒÔÊÇ2ÔÚÇ°£¬1ÔÚºó
         }
     }
     return value.top();
 
 }
-//å¯¹ä¸€ä¸ªæ•°è¿›è¡Œè®¡ç®—ï¼ŒåŒ…æ‹¬sqrt,inv
+//¶ÔÒ»¸öÊý½øÐÐ¼ÆËã£¬°üÀ¨sqrt,inv
 double UnaryOpera(double num1, char op) {
     switch (op) {
         case 's':
             if (num1<0){
-                cout<<"é”™è¯¯: è´Ÿæ•°æ— æ³•å¼€æ ¹å·ï¼"<<endl;
+                cout<<"´íÎó: ¸ºÊýÎÞ·¨¿ª¸ùºÅ£¡"<<endl;
                 return 0;
             }
             return sqrt(num1);
         case 'i':
             if (num1==0){
-                cout<<"é”™è¯¯: æ— æ³•å¯¹é›¶å–å€’æ•°ï¼"<<endl;
+                cout<<"´íÎó: ÎÞ·¨¶ÔÁãÈ¡µ¹Êý£¡"<<endl;
                 return 0;
             }
             return 1.0/num1;
@@ -118,7 +114,7 @@ double UnaryOpera(double num1, char op) {
     return 0;
 }
 
-//å¯¹ä¸¤ä¸ªæ•°è¿›è¡Œè¿ç®—ï¼ŒåŒ…æ‹¬+,-,*,/,%
+//¶ÔÁ½¸öÊý½øÐÐÔËËã£¬°üÀ¨+,-,*,/,%
 double Opera(double num1, double num2, char op) {
     switch (op) {
         case '+':return num1+num2;
@@ -126,16 +122,16 @@ double Opera(double num1, double num2, char op) {
         case '*':return num1*num2;
         case '/':
             if (num2 == 0) {
-                cout << "é”™è¯¯: é™¤æ•°ä¸èƒ½ä¸ºé›¶ï¼" << endl;
+                cout << "´íÎó: ³ýÊý²»ÄÜÎªÁã£¡" << endl;
                 return 0;
             }
             return num1 / num2;
         case '%':
             if ((int)num2 == 0) {
-                cout << "é”™è¯¯: æ¨¡é™¤æ•°ä¸èƒ½ä¸ºé›¶ï¼" << endl;
+                cout << "´íÎó: Ä£³ýÊý²»ÄÜÎªÁã£¡" << endl;
                 return 0;
             }
-            return (int)num1 % (int)num2;  // åªå¤„ç†æ•´æ•°çš„æ¨¡è¿ç®—
+            return (int)num1 % (int)num2;  // Ö»´¦ÀíÕûÊýµÄÄ£ÔËËã
 
     }
     return 0;
@@ -147,23 +143,23 @@ int Priority(char operation){
     else if(operation=='s' || operation=='i' ) return 3;
     else return -1;
 }
-//è¯†åˆ«ä¸€ä¸ªå®Œæ•´çš„æ•°=æ•´æ•°éƒ¨åˆ†+å°æ•°éƒ¨åˆ†
+//Ê¶±ðÒ»¸öÍêÕûµÄÊý=ÕûÊý²¿·Ö+Ð¡Êý²¿·Ö
 double getSingleNum(const string s,int& i){
     double num=0;
     int len=s.size();
     while (i<len && (isdigit(s[i]) || s[i]=='.')){
-        //å¤„ç†å°æ•°éƒ¨åˆ†
+        //´¦ÀíÐ¡Êý²¿·Ö
         if (s[i]=='.'){
             double fraction=0.1;
             i++;
             while (i<len && isdigit(s[i])){
                 num+=(s[i]-'0')*fraction;
-                fraction/=10;//ä½¿ä½æ•°ä¸‹é™
+                fraction/=10;//Ê¹Î»ÊýÏÂ½µ
                 i++;
             }
-            i--;//è°ƒæ•´ç´¢å¼•
+            i--;//µ÷ÕûË÷Òý
         }
-        //å¤„ç†æ•´æ•°éƒ¨åˆ†
+        //´¦ÀíÕûÊý²¿·Ö
         else{
             num=num*10+(s[i]-'0');
         }
